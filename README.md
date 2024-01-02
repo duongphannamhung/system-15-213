@@ -6,4 +6,4 @@
 
 ### What I've done:
 - lab0:
-    - [queue with linked-list struct](https://github.com/duongphannamhung/system-15-213/blob/main/computer-system/cprogramminglab-handout/queue.c)
+    - [queue with linked-list struct](https://github.com/duongphannamhung/system-15-213/blob/main/lab0-cprogramminglab-handout/queue.c)

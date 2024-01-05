@@ -7,7 +7,8 @@
 # XXX revert to plain gcc after shark OS upgrade (to match unix.andrew)
 # XXX at that point may want to add -Wno-shift-negative-value to CFLAGS
 CC = /usr/bin/gcc
-CFLAGS = -std=gnu99 -m64 -O1 -fwrapv -g -Werror -Wall -Wextra \
+# CFLAGS = -O1 -Wall
+CFLAGS = -std=gnu99 -O1 -fwrapv -g -Werror -Wall -Wextra \
 	 -Wstrict-prototypes -Wwrite-strings \
 	 -Wno-unused-parameter -Wno-cast-function-type -Wno-bool-operation
 LDLIBS = -lm

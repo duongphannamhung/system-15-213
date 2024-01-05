@@ -124,8 +124,20 @@ extern int printf(const char *, ...);
  *   Max ops: 5
  *   Rating: 2
  */
+
+#include <stddef.h>
+
+typedef unsigned char *pointer;
+void show_bytes(pointer start, size_t len) {
+    size_t i;
+    printf("Show pointer:\n");
+    for (i = 0; i < len; i++)
+        printf("%p\t0x%.2x\n", start + i, start[i]);
+    printf("End show pointer\n");
+}
+
 long copyLSB(long x) {
-    return 2;
+    return (x << 63) >> 63;
 }
 /*
  * allOddBits - return 1 if all odd-numbered bits in word set to 1
@@ -137,7 +149,23 @@ long copyLSB(long x) {
  *   Rating: 2
  */
 long allOddBits(long x) {
-    return 2;
+    // printf("Current number: %lx\n", x);
+    long temp = 170;
+    long oddOneEvenZero = 170;
+    oddOneEvenZero = (oddOneEvenZero << 8) + temp;
+    temp = oddOneEvenZero;
+    oddOneEvenZero = (oddOneEvenZero << 16) + temp;
+    temp = oddOneEvenZero;
+    oddOneEvenZero = (oddOneEvenZero << 32) + temp;
+
+    // long result = (x >> 32);
+    // long result = (x & oddOneEvenZero);
+    // | ((x >> 32) & oddOneEvenZero);
+    long result = !(~(oddOneEvenZero & x) + oddOneEvenZero + 1);
+    // printf("Result: %lx\n\n", result);
+    return result;
+    // return (x & 170) | ((x >> 8) & 170);
+    // return !(~(oddOneEvenZero & x) + oddOneEvenZero + 1);
 }
 /*
  * isNotEqual - return 0 if x == y, and 1 otherwise
@@ -147,8 +175,13 @@ long allOddBits(long x) {
  *   Rating: 2
  */
 long isNotEqual(long x, long y) {
-    return 2L;
+    // printf("%lx x: %lx , y: %lx\n", temp, x, y);
+    // long result = (long)temp;
+    // printf("%lx\n\n", result);
+    // return !(~(x & y) + y + 1) ;
+    return (!(~(~x + y))) ^ 1;
 }
+
 /*
  * dividePower2 - Compute x/(2^n), for 0 <= n <= 62
  *  Round toward zero

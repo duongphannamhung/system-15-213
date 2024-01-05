@@ -190,8 +190,88 @@ long isNotEqual(long x, long y) {
  *   Max ops: 15
  *   Rating: 2
  */
+
+// 8421
+// 1011
+// -5
+// 1101
+// -3
+// want:
+// 1110
+// -2
+
+// 1010
+// -6
+// 1101
+// -3
+
+// 1110
+// -2
+// want:
+// 1111
+// -1
+
+// 0011
+// 3
+// 0001
+// 1
+
+// 0x 0001 0001
+// -16 + 1
+
 long dividePower2(long x, long n) {
-    return 2L;
+
+    // printf("Original Number:");
+    // show_bytes((pointer)&x, sizeof(long));
+
+    // long temp = x >> n;
+    // printf("\nAfter divided number:\n");
+    // show_bytes((pointer)&temp, sizeof(long));
+    // printf("=========\n\n");
+
+    // -18 - 17->9 - 18->- 17 - 17->- 16 - 16->- 15(-)0->1,
+    //     1->0 : 0
+
+    //     16 17->8
+
+    // printf("x: %ld, hex x: %lx, n: %lx\n", x, x, n);
+
+    long odd = ~0;
+    // printf("%lx\n", odd);
+    odd = odd << n;
+    // printf("%lx\n", odd);
+    odd = ~odd;
+    // printf("%lx\n", odd);
+    odd = !(odd & x) ^ 1;
+    // long odd = !(odd & x) ^ 1;
+
+    long sign = !(~(x >> 63));
+    // printf("odd: %ld %lx\n", odd, odd);
+    // printf("sign: %ld %lx\n", sign, sign);
+
+    // long odd = (x >> (n - 1)) & 1;
+
+    long result = (x >> n) + (odd & sign);
+    // printf("result: %ld, result in lx: %lx\n\n", result, result);
+
+    // printf("result: %ld , odd: %ld, sign: %ld\n", result, odd, sign);
+
+    // printf("in lx r: %lx | x: %lx , n: %ld\n\n", result, x, n);
+
+    // printf("result: %ld | x: %ld , n: %ld\n", result, x, n);
+    
+    return result;
+    // return result;
+
+    // return temp2 >> n;
+
+    // if ((x < 0) && (n != 0)) {
+    //     return ((x - 1) >> n) - 1;
+    // }
+
+    // return x >> n;
+
+    // return (x + ((x >> 63) & ((1 << n) + ~0))) >> n;
 }
 // 3
 /*

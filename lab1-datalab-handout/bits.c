@@ -124,8 +124,20 @@ extern int printf(const char *, ...);
  *   Max ops: 5
  *   Rating: 2
  */
+
+#include <stddef.h>
+
+typedef unsigned char *pointer;
+void show_bytes(pointer start, size_t len) {
+    size_t i;
+    printf("Show pointer:\n");
+    for (i = 0; i < len; i++)
+        printf("%p\t0x%.2x\n", start + i, start[i]);
+    printf("End show pointer\n");
+}
+
 long copyLSB(long x) {
-    return 2;
+    return (x << 63) >> 63;
 }
 /*
  * allOddBits - return 1 if all odd-numbered bits in word set to 1
@@ -137,7 +149,23 @@ long copyLSB(long x) {
  *   Rating: 2
  */
 long allOddBits(long x) {
-    return 2;
+    // printf("Current number: %lx\n", x);
+    long temp = 170;
+    long oddOneEvenZero = 170;
+    oddOneEvenZero = (oddOneEvenZero << 8) + temp;
+    temp = oddOneEvenZero;
+    oddOneEvenZero = (oddOneEvenZero << 16) + temp;
+    temp = oddOneEvenZero;
+    oddOneEvenZero = (oddOneEvenZero << 32) + temp;
+
+    // long result = (x >> 32);
+    // long result = (x & oddOneEvenZero);
+    // | ((x >> 32) & oddOneEvenZero);
+    long result = !(~(oddOneEvenZero & x) + oddOneEvenZero + 1);
+    // printf("Result: %lx\n\n", result);
+    return result;
+    // return (x & 170) | ((x >> 8) & 170);
+    // return !(~(oddOneEvenZero & x) + oddOneEvenZero + 1);
 }
 /*
  * isNotEqual - return 0 if x == y, and 1 otherwise
@@ -147,8 +175,13 @@ long allOddBits(long x) {
  *   Rating: 2
  */
 long isNotEqual(long x, long y) {
-    return 2L;
+    // printf("%lx x: %lx , y: %lx\n", temp, x, y);
+    // long result = (long)temp;
+    // printf("%lx\n\n", result);
+    // return !(~(x & y) + y + 1) ;
+    return (!(~(~x + y))) ^ 1;
 }
+
 /*
  * dividePower2 - Compute x/(2^n), for 0 <= n <= 62
  *  Round toward zero
@@ -157,10 +190,107 @@ long isNotEqual(long x, long y) {
  *   Max ops: 15
  *   Rating: 2
  */
+
+// 8421
+// 1011
+// -5
+// 1101
+// -3
+// want:
+// 1110
+// -2
+
+// 1010
+// -6
+// 1101
+// -3
+
+// 1110
+// -2
+// want:
+// 1111
+// -1
+
+// 0011
+// 3
+// 0001
+// 1
+
+// 0x 0001 0001
+// -16 + 1
+
 long dividePower2(long x, long n) {
-    return 2L;
+
+    // printf("Original Number:");
+    // show_bytes((pointer)&x, sizeof(long));
+
+    // long temp = x >> n;
+    // printf("\nAfter divided number:\n");
+    // show_bytes((pointer)&temp, sizeof(long));
+    // printf("=========\n\n");
+
+    // -18 - 17->9 - 18->- 17 - 17->- 16 - 16->- 15(-)0->1,
+    //     1->0 : 0
+
+    //     16 17->8
+
+    // printf("x: %ld, hex x: %lx, n: %lx\n", x, x, n);
+
+    long odd = ~0;
+    // printf("%lx\n", odd);
+    odd = odd << n;
+    // printf("%lx\n", odd);
+    odd = ~odd;
+    // printf("%lx\n", odd);
+    odd = !(odd & x) ^ 1;
+    // long odd = !(odd & x) ^ 1;
+
+    long sign = !(~(x >> 63));
+    // printf("odd: %ld %lx\n", odd, odd);
+    // printf("sign: %ld %lx\n", sign, sign);
+
+    // long odd = (x >> (n - 1)) & 1;
+
+    long result = (x >> n) + (odd & sign);
+    // printf("result: %ld, result in lx: %lx\n\n", result, result);
+
+    // printf("result: %ld , odd: %ld, sign: %ld\n", result, odd, sign);
+
+    // printf("in lx r: %lx | x: %lx , n: %ld\n\n", result, x, n);
+
+    // printf("result: %ld | x: %ld , n: %ld\n", result, x, n);
+
+    return result;
+    // return result;
+
+    // return temp2 >> n;
+
+    // if ((x < 0) && (n != 0)) {
+    //     return ((x - 1) >> n) - 1;
+    // }
+
+    // return x >> n;
+
+    // return (x + ((x >> 63) & ((1 << n) + ~0))) >> n;
 }
 // 3
+
+// 101 1101
+// 111 1011
+// 111 1100
+
+// -21
+// 2 ^ 3
+// -3
+
+// 10 1011 : -21
+// 11 1101 : -3 (wrong)
+// 11 1110 : -2 (right)
+
+// 11 1000 : -2 ^ 3
+// 00 1000 : ~ + 1
+// 11 0011
+
 /*
  * remainderPower2 - Compute x%(2^n), for 0 <= n <= 30
  *   Negative arguments should yield negative remainders
@@ -170,7 +300,8 @@ long dividePower2(long x, long n) {
  *   Rating: 3
  */
 long remainderPower2(long x, long n) {
-    return 2L;
+    long result = dividePower2(x, n);
+    return ~(result << n) + 1 + x;
 }
 /*
  * rotateLeft - Rotate x to the left by n
@@ -182,7 +313,21 @@ long remainderPower2(long x, long n) {
  *   Rating: 3
  */
 long rotateLeft(long x, long n) {
-    return 2;
+    // x = 8765432187654321L;
+    // n = 4L;
+    // printf("x: %ld, hex x: %lx, n: %lx\n", x, x, n);
+
+    long temp = ~0;
+    temp = ~(temp << n);
+    long right = (x << n);
+    long left = temp & (x >> (64 + ~n + 1));
+    // printf("temp: %ld, hex temp: %lx\n", temp, temp);
+    // printf("right: %ld, hex right: %lx\n", right, right);
+    // printf("left: %ld, hex left: %lx\n", left, left);
+
+    // printf("###########\n\n");
+    // return (x >> n) | (x << (64 - n));
+    return left | right;
 }
 /*
  * bitMask - Generate a mask consisting of all 1's
@@ -195,7 +340,8 @@ long rotateLeft(long x, long n) {
  *   Rating: 3
  */
 long bitMask(long highbit, long lowbit) {
-    return 2L;
+    long mask = ~0;
+    return ~(mask << highbit << 1) & (mask << lowbit);
 }
 /*
  * isPower2 - returns 1 if x is a power of 2, and 0 otherwise
@@ -206,7 +352,8 @@ long bitMask(long highbit, long lowbit) {
  *   Rating: 3
  */
 long isPower2(long x) {
-    return 2L;
+    long sign = !(x >> 63);
+    return (!!x) & sign & !((x - 1) & x);
 }
 // 4
 /*
@@ -220,7 +367,7 @@ long isPower2(long x) {
  *   Rating: 4
  */
 long allAsciiDigits(long x) {
-    return 2;
+    return -1;
 }
 /*
  * trueThreeFourths - multiplies by 3/4 rounding toward 0,

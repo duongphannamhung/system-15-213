@@ -259,7 +259,7 @@ long dividePower2(long x, long n) {
     // printf("in lx r: %lx | x: %lx , n: %ld\n\n", result, x, n);
 
     // printf("result: %ld | x: %ld , n: %ld\n", result, x, n);
-    
+
     return result;
     // return result;
 
@@ -274,6 +274,23 @@ long dividePower2(long x, long n) {
     // return (x + ((x >> 63) & ((1 << n) + ~0))) >> n;
 }
 // 3
+
+// 101 1101
+// 111 1011
+// 111 1100
+
+// -21
+// 2 ^ 3
+// -3
+
+// 10 1011 : -21
+// 11 1101 : -3 (wrong)
+// 11 1110 : -2 (right)
+
+// 11 1000 : -2 ^ 3
+// 00 1000 : ~ + 1
+// 11 0011
+
 /*
  * remainderPower2 - Compute x%(2^n), for 0 <= n <= 30
  *   Negative arguments should yield negative remainders
@@ -283,7 +300,8 @@ long dividePower2(long x, long n) {
  *   Rating: 3
  */
 long remainderPower2(long x, long n) {
-    return 2L;
+    long result = dividePower2(x, n);
+    return ~(result << n) + 1 + x;
 }
 /*
  * rotateLeft - Rotate x to the left by n
@@ -295,7 +313,21 @@ long remainderPower2(long x, long n) {
  *   Rating: 3
  */
 long rotateLeft(long x, long n) {
-    return 2;
+    // x = 8765432187654321L;
+    // n = 4L;
+    // printf("x: %ld, hex x: %lx, n: %lx\n", x, x, n);
+
+    long temp = ~0;
+    temp = ~(temp << n);
+    long right = (x << n);
+    long left = temp & (x >> (64 + ~n + 1));
+    // printf("temp: %ld, hex temp: %lx\n", temp, temp);
+    // printf("right: %ld, hex right: %lx\n", right, right);
+    // printf("left: %ld, hex left: %lx\n", left, left);
+
+    // printf("###########\n\n");
+    // return (x >> n) | (x << (64 - n));
+    return left | right;
 }
 /*
  * bitMask - Generate a mask consisting of all 1's
@@ -308,7 +340,8 @@ long rotateLeft(long x, long n) {
  *   Rating: 3
  */
 long bitMask(long highbit, long lowbit) {
-    return 2L;
+    long mask = ~0;
+    return ~(mask << highbit << 1) & (mask << lowbit);
 }
 /*
  * isPower2 - returns 1 if x is a power of 2, and 0 otherwise
@@ -319,7 +352,8 @@ long bitMask(long highbit, long lowbit) {
  *   Rating: 3
  */
 long isPower2(long x) {
-    return 2L;
+    long sign = !(x >> 63);
+    return (!!x) & sign & !((x - 1) & x);
 }
 // 4
 /*
@@ -333,7 +367,7 @@ long isPower2(long x) {
  *   Rating: 4
  */
 long allAsciiDigits(long x) {
-    return 2;
+    return -1;
 }
 /*
  * trueThreeFourths - multiplies by 3/4 rounding toward 0,
